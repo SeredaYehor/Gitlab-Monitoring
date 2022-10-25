@@ -1,0 +1,7 @@
+#!/bin/bash
+
+sudo docker run -dt \
+--publish=3100:3100 \
+--volume=/root/loki.conf:/etc/loki/local-config.yaml \
+--name=loki \
+grafana/loki:1.4.1 -config.file=/etc/loki/local-config.yaml
