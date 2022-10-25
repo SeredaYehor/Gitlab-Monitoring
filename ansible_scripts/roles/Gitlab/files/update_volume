@@ -1,0 +1,5 @@
+#!/bin/bash
+
+find='\["/cache"\]'
+insert='\["/var/run/docker\.sock:/var/run/docker\.sock", "/cache"\]'
+sed -i "s|${find}|${insert}|g" /etc/gitlab-runner/config.toml

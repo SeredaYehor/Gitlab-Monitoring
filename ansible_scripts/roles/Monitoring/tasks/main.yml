@@ -1,0 +1,20 @@
+---
+   - name: Include configuration vars
+     include_vars:
+       file: ./variables.yml
+
+   - name: Copying prometheus config file
+     template:
+       src: prometheus.j2
+       dest: ~/prometheus.yml
+       mode: "0666"
+
+   - name: Starting prometheus
+     become: yes
+     shell: docker run -d -v ${PWD}/prometheus.yml:/etc/prometheus/prometheus.yml -p 9090:9090 prom/prometheus
+
+   - name: Starting grafana
+     become: yes
+     shell: docker run -d -p 3000:3000 grafana/grafana
+
+

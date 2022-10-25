@@ -1,0 +1,5 @@
+---
+   gitlab_token: <token>
+   production_ip: 
+   runner_ip: 
+   monitoring_ip:

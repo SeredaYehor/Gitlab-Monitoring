@@ -1,0 +1,54 @@
+---
+   - name: "Creating builder user"
+     user:
+       name: "builder"
+       groups: "docker"
+  
+   - name: "Add authorized keys"
+     authorized_key:
+       user: "builder"
+       key: "{{ lookup('file', 'files/builder.pub') }}"
+
+   - name: "Adding builder to sudoers"
+     lineinfile:
+       dest: "/etc/sudoers" # path: in version 2.3
+       state: "present"
+       regexp: "^builder"
+       line: "builder ALL=(ALL) NOPASSWD: ALL"
+
+   - name: "Installing nginx"
+     apt:
+       name: ['nginx']
+       update_cache: yes
+
+   - name: "Creating conf.d dir"
+     file:
+       path: /etc/nginx/conf.d
+       owner: root
+       group: root
+       mode: "0600"
+
+   - name: "Copying redmine.conf file"
+     copy:
+       src: redmine.conf
+       dest: /etc/nginx/conf.d/redmine.conf
+
+   - name: "Copying deploy script"
+     copy:
+       src: deploy
+       dest: /home/builder/deploy
+       owner: builder
+       mode: "0700"
+
+   - name: "Creating .env file"
+     shell: touch .env
+
+   - name: "Copying start_cadvisor script"
+     copy:
+       src: start_cadvisor
+       dest: start_cadvisor
+       mode: "0700"
+
+   - name: "Starting cadvisor"
+     shell: ./start_cadvisor
+

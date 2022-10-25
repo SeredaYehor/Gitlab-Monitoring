@@ -1,0 +1,36 @@
+#!/bin/bash
+
+is_deployed=`sudo docker-compose top`
+docker pull registry.gitlab.com/d3buggers/redmine:$1
+if [ -z "$is_deployed" ]
+then
+	sudo docker-compose up -d database redmine-green
+else
+	container=`sudo docker ps | grep  "redmine-green" | awk '{print $1}'`
+	if  [ -z "$container" ]
+	then
+	        container=`sudo docker ps | grep  "redmine-blue" | awk '{print $1}'`
+	        new_port=8080
+                new_service="redmine-green"
+	        old_port=8081
+	else
+	        new_port=8081
+                new_service="redmine-blue"
+	        old_port=8080
+	fi
+	sudo docker-compose up -d $new_service
+	healthy=`sudo docker ps | grep "starting"`
+	while [ ! -z "$healthy" ]
+	do
+	        sleep 5
+	        healthy=`sudo docker ps | grep "starting"`
+	done
+	sudo sed -i "s/${old_port}/${new_port}/g" /etc/nginx/conf.d/redmine.conf
+	sudo systemctl restart nginx
+	if  [ ! -z "$container" ]
+	then
+	        sudo docker kill "$container" && sudo docker rm "$container"
+	fi
+fi
+exit 0
+

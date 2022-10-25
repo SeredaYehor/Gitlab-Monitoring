@@ -1,0 +1,19 @@
+- hosts: gitlab
+  become: yes
+  roles:
+    - { role: Gitlab }
+
+- hosts: production
+  become: yes
+  roles:
+    - { role: Production }
+
+#- hosts: gitlab, production
+#  become: yes
+#  roles:
+#    - { role: SetupAgents }
+
+- hosts: monitoring
+  become: yes
+  roles:
+    - { role: Monitoring }

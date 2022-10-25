@@ -1,0 +1,14 @@
+[gitlab]
+ RUNNER ansible_port=22 ansible_host=<host_ip>
+
+[production]
+ PRODUCTION ansible_port=22 ansible_host=<host_ip>
+
+[monitoring]
+ MONITORING ansible_port=22 ansible_host=<host_ip>
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+ansible_user=<ssh_user>
+ansible_ssh_private_key_file=<ssh_key>
+ansible_connection=ssh

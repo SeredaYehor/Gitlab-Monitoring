@@ -1,0 +1,47 @@
+---
+   - name: Include configuration vars
+     include_vars:
+       file: ./variables.yml
+
+   - name: Downloading gitlab binary
+     shell: curl -L --output /usr/local/bin/gitlab-runner https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
+
+   - name: Changing permissions for binary
+     shell: chmod +x /usr/local/bin/gitlab-runner
+
+   - name: Creating gitlab-runner user
+     shell: useradd --comment 'GitLab Runner' --create-home gitlab-runner --shell /bin/bash
+
+   - name: Installing gitlab-runner
+     shell: gitlab-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner
+
+   - name: Starting gitlab-runner
+     shell: gitlab-runner start
+
+   - name: Registering gitlab-runner
+     shell: gitlab-runner register --non-interactive --url https://gitlab.com/ --registration-token {{ gitlab_token }}  --executor docker --docker-image ruby:2.7
+
+   - name: Removing bash_logout file and adding runner user to docker group
+     shell: rm /home/gitlab-runner/.bash_logout && usermod -aG docker gitlab-runner
+
+   - name: Copying update_volume script
+     copy:
+       src: update_volume
+       dest: ~/update_volume
+       mode: "0700"
+
+   - name: Executing update_volume
+     shell: ~/update_volume
+
+   - name: Changing docker.sock permissions and restarting runner
+     shell: chmod 666 /var/run/docker.sock && gitlab-runner restart
+
+   - name: "Copying start_cadvisor script"
+     copy:
+       src: start_cadvisor
+       dest: start_cadvisor
+       mode: "0700"
+
+   - name: "Starting cadvisor"
+     shell: ./start_cadvisor
+
