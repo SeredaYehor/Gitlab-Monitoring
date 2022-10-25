@@ -1,0 +1,8 @@
+#!/bin/bash
+
+sudo apt-get update
+sudo apt install -y wget curl
+
+wget https://get.docker.com -O get-docker.sh && chmod +x get-docker.sh
+sudo ./get-docker.sh
+rm get-docker.sh
