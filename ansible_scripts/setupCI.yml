@@ -8,12 +8,13 @@
   roles:
     - { role: Production }
 
-#- hosts: gitlab, production
-#  become: yes
-#  roles:
-#    - { role: SetupAgents }
-
 - hosts: monitoring
   become: yes
   roles:
     - { role: Monitoring }
+
+- hosts: gitlab, production
+  become: yes
+  roles:
+    - { role: Promtail }
+
