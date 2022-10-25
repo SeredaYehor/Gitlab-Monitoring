@@ -1,0 +1,23 @@
+#!/bin/bash
+
+echo "Executing terraform"
+cd terraform_scripts
+terraform apply -auto-approve
+
+echo "Gathering terraform outputs"
+servers=(`terraform output | awk '{print $1}'`)
+ips=(`terraform output | awk '{print $3}'`)
+
+echo "Updating hosts and variables.yml files"
+cd ../ansible_scripts
+for index in 0 1 2
+do
+        sed -i "/${servers[$index]^^}/c\ ${servers[$index]^^} ansible_port=22 ansible_host=${ips[$index]//\"}" hosts
+        sed -i "/${servers[$index]}_ip/c\   ${servers[$index]}_ip: ${ips[$index]//\"}" variables.yml
+done
+
+echo "Waiting for hosts starting"
+sleep 1m
+
+echo "Configuring servers"
+ansible-playbook -i hosts setupCI.yml
