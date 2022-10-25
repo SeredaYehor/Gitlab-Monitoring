@@ -1,0 +1,19 @@
+---
+   - name: Include configuration vars
+     include_vars:
+       file: ./variables.yml
+
+   - name: Copying promtail config file
+     template:
+       src: promtail.j2
+       dest: ~/promtail.yaml
+       mode: "0666"
+
+   - name: Copying start_promtail script
+     copy:
+       src: start_promtail
+       dest: ~/start_promtail
+       mode: "0700"
+
+   - name: Starting promtail
+     shell: sudo  ~/start_promtail

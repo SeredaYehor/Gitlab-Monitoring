@@ -1,0 +1,9 @@
+#!/bin/bash
+
+sudo docker run -dt \
+--volume=/var/log:/var/log \
+--volume=/var/lib/docker/containers:/var/lib/docker/containers \
+--volume=/root/promtail.yaml:/etc/promtail/docker-config.yaml \
+--publish=9080:9080 \
+--name=promtail \
+grafana/promtail:1.4.1 -config.file=/etc/promtail/docker-config.yaml
