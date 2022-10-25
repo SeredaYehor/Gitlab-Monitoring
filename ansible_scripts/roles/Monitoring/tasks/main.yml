@@ -10,11 +10,23 @@
        mode: "0666"
 
    - name: Starting prometheus
-     become: yes
-     shell: docker run -d -v ${PWD}/prometheus.yml:/etc/prometheus/prometheus.yml -p 9090:9090 prom/prometheus
+     shell: sudo docker run -d -v ~/prometheus.yml:/etc/prometheus/prometheus.yml -p 9090:9090 prom/prometheus
 
    - name: Starting grafana
      become: yes
      shell: docker run -d -p 3000:3000 grafana/grafana
 
+   - name: Copying loki config
+     copy:
+       src: loki.conf
+       dest: ~/loki.conf
+       mode: "0666"
 
+   - name: Copying start_loki script
+     copy:
+       src: start_loki
+       dest: ~/start_loki
+       mode: "0700"
+
+   - name: Starting loki
+     shell: ~/start_loki
