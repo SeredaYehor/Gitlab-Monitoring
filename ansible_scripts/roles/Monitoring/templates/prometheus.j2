@@ -35,7 +35,8 @@ scrape_configs:
     scrape_interval: 5s
     scrape_timeout: 5s
     static_configs:
-      - targets: ['{{ runner_ip }}:8088', '{{ production_ip }}:8088']
+      - targets: ['{{ runner_ip }}:8088']
+      - targets: ['{{ production_ip }}:8088']
     metric_relabel_configs:
       - regex: '^container_label_com_gitlab_gitlab_runner_.*$'
         action: labeldrop
@@ -48,6 +49,11 @@ scrape_configs:
         replacement: "runner"
       - regex: "image"
         action: labeldrop
+      - source_labels: ["name"]
+        action: replace
+        regex:  "^redmine.*$"
+        target_label: "name"
+        replacement: "redmine"
       #- source_labels: ["container_label_com_docker_compose_service"]
       #  action: replace
       #  regex: "redmine"
